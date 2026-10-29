@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core Pages -->
+  <url>
+    <loc>https://www.oursolver.com/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/tools/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/about/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/privacy/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/terms/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/help/</loc>
+  </url>
+
+  <!-- Image Tools -->
+  <url>
+    <loc>https://www.oursolver.com/tools/compress-image/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/tools/resize-image/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/tools/convert-image/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/tools/images-to-pdf/</loc>
+  </url>
+
+  <!-- PDF Tools -->
+  <url>
+    <loc>https://www.oursolver.com/tools/merge-pdf/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/tools/organize-pdf/</loc>
+  </url>
+
+  <!-- Blog & Guides -->
+  <url>
+    <loc>https://www.oursolver.com/blog/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/blog/compress-image-under-200kb/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/blog/resize-without-stretching/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/blog/jpg-png-webp/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/blog/merge-pdfs-in-order/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/blog/extract-reorder-pdf-pages/</loc>
+  </url>
+  <url>
+    <loc>https://www.oursolver.com/blog/photos-to-pdf/</loc>
+  </url>
+</urlset>

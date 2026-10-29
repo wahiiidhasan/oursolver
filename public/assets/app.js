@@ -3,49 +3,41 @@ const $=s=>document.querySelector(s);
 const search=$('#tool-search');
 function filter(){const q=search?.value.toLowerCase().trim()||'';const cat=$('.chip.active')?.dataset.filter||'All';let count=0;document.querySelectorAll('.tool-card').forEach(c=>{c.hidden=!(c.textContent.toLowerCase().includes(q)&&(cat==='All'||c.dataset.category===cat));if(!c.hidden)count++;});if($('#empty'))$('#empty').hidden=!!count;}
 search?.addEventListener('input',filter);
-document.querySelectorAll('.filters .chip').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.filters .chip').forEach(c=>{c.classList.remove('active');c.setAttribute('aria-pressed','false');});b.classList.add('active');b.setAttribute('aria-pressed','true');filter();});});
-
-const root=document.querySelector('.workbench');
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-pressed','false');});b.classList.add('active');b.setAttribute('aria-pressed','true');filter();}));
+const root=$('[data-tool]');
 if(root){
- const tool=root.dataset.tool;
+ const tool=root.dataset.tool, input=$('#files'), list=$('#file-list'), status=$('#status'), results=$('#results'), run=$('#run');
+ let files=[],urls=[],busy=false,generation=0;
  const imageMode=['resize-image','compress-image','convert-image','images-to-pdf'].includes(tool);
- const input=$('#files');
- const list=$('#file-list');
- const status=$('#status');
- const results=$('#results');
- const run=$('#run');
- let files=[];
- let busy=false;
- let generation=0;
+ function clearResults(){urls.forEach(URL.revokeObjectURL);urls=[];results.replaceChildren();}
+ function message(t,error=false){status.textContent=t;status.classList.toggle('error',error);}
  const previewUrls=new Map();
- const urls=[];
-
- function message(text,error=false){status.textContent=text;status.className=`status ${error?'error':''}`;status.hidden=!text;}
- function clearResults(){results.replaceChildren();urls.forEach(URL.revokeObjectURL);urls.length=0;}
-
+ const selection=document.createElement('div');selection.className='selection-summary';selection.hidden=true;selection.setAttribute('role','status');selection.setAttribute('aria-live','polite');list.before(selection);
+ const dropTitle=$('#drop strong'),originalDropTitle=dropTitle.textContent;
  function render(){
-  list.replaceChildren();
-  const count=files.length;
-  files.forEach((f,i)=>{
-   const row=document.createElement('li');row.className='file-row';
-   let visual;
-   if(imageMode&&/\.(jpe?g|png|webp)$/i.test(f.name)){
-    visual=document.createElement('img');visual.className='thumb';visual.alt=`Preview of ${f.name}`;
-    let u=previewUrls.get(f);if(!u){u=URL.createObjectURL(f);previewUrls.set(f,u);}
-    visual.src=u;
-   }else{visual=document.createElement('span');visual.className='badge';visual.textContent=f.name.split('.').pop().toUpperCase();}
-   const info=document.createElement('div');info.className='info';
-   const title=document.createElement('div');title.className='title';title.textContent=f.name;
-   const meta=document.createElement('div');meta.className='micro';meta.textContent=bytes(f.size);
-   info.append(title,meta);
-   const actions=document.createElement('div');actions.className='actions';
-   const up=i>0,down=i<count-1;
-   const moveUp=up&&['merge-pdf','images-to-pdf'].includes(tool);
-   const moveDown=down&&['merge-pdf','images-to-pdf'].includes(tool);
-   const buttons=[moveUp&&['↑',-1],moveDown&&['↓',1],['✕',0]].filter(Boolean);
-   for(const [label,delta] of buttons){
-    const b=document.createElement('button');b.type='button';b.className='button secondary small';b.textContent=label;b.disabled=busy;
-    b.setAttribute('aria-label',delta?`Move ${f.name} ${delta<0?'up':'down'}`:`Remove ${f.name}`);
+  for(const [file,url] of previewUrls){if(!files.includes(file)){URL.revokeObjectURL(url);previewUrls.delete(file);}}
+  const count=files.length,multi=['merge-pdf','images-to-pdf'].includes(tool);
+  root.classList.toggle('has-files',count>0);selection.hidden=!count;
+  selection.replaceChildren();
+  if(count){const check=document.createElement('span');check.className='selection-check';check.textContent='✓';check.setAttribute('aria-hidden','true');
+   const copy=document.createElement('div'),heading=document.createElement('strong'),detail=document.createElement('p');
+   heading.textContent=`${count} file${count===1?'':'s'} selected`;
+   detail.textContent=`${bytes(files.reduce((n,f)=>n+f.size,0))} total · Files stay on your device. ${multi?'Arrange them below, then choose your settings.':'Choose your settings below to continue.'}`;
+   copy.append(heading,detail);selection.append(check,copy);
+  }
+  dropTitle.textContent=count?(multi?'Add more files if you need them':'Choose another file to replace this one'):originalDropTitle;
+  list.replaceChildren();files.forEach((f,i)=>{
+   const row=document.createElement('li');row.className='selected-file';
+   const visual=document.createElement('div');visual.className='file-preview';
+   const badge=document.createElement('span');badge.className='file-type';badge.textContent=imageMode?'IMG':'PDF';visual.append(badge);
+   if(imageMode){if(!previewUrls.has(f))previewUrls.set(f,URL.createObjectURL(f));const img=document.createElement('img');img.src=previewUrls.get(f);img.alt='';img.loading='lazy';img.onerror=()=>img.remove();visual.append(img);}
+   const info=document.createElement('div');info.className='file-info';const name=document.createElement('strong');name.textContent=f.name;
+   const detail=document.createElement('p');detail.textContent=`${bytes(f.size)} · ${f.name.split('.').pop().toUpperCase()}`;
+   const order=document.createElement('span');order.className='file-order';order.textContent=multi?`File ${i+1} of ${count}`:'Selected file';info.append(order,name,detail);
+   const actions=document.createElement('div');actions.className='file-actions';
+   for(const [label,delta]of [...(multi?[['↑',-1],['↓',1]]:[]),['Remove',0]]){
+    const b=document.createElement('button');b.type='button';b.textContent=label;b.title=delta<0?'Move up':delta>0?'Move down':'Remove file';b.setAttribute('aria-label',`${delta<0?'Move up':delta>0?'Move down':'Remove'} ${f.name}`);
+    b.disabled=busy||(delta<0&&i===0)||(delta>0&&i===count-1);
     b.onclick=()=>{if(busy)return;if(delta)[files[i],files[i+delta]]=[files[i+delta],files[i]];else files.splice(i,1);generation++;clearResults();render();message(files.length?`${files.length} file${files.length===1?'':'s'} selected. Choose your settings and create the result.`:'No files selected. Choose a file to start.');};actions.append(b);
    }
    row.append(visual,info,actions);list.append(row);

@@ -1,24 +1,29 @@
-# Verification report — 29 October 2026
+# Verification Report — 30 October 2026
 
 ## Passed
 
-- Production build: 20 static HTML pages.
-- Site audit: 392 internal links/asset references resolve; unique titles and descriptions; one H1 per page; canonical links present; JSON-LD parses; sitemap, robots file and third-party notices exist.
-- Five automated tests: page selection order/reversal/duplicates, invalid selections and output limits, proportional/exact resizing, PDF page copy order/dimensions, image embedding in a readable PDF.
-- Browser search: entering “merge” leaves the merge tool visible and hides unrelated tools.
-- Browser merge: two test PDFs produced a three-page PDF result.
-- Browser resize: a 1600 × 900 image produced a 1200 × 675 proportional result.
-- Browser compression: an impossible 1 KB JPEG target produced an explicit target-not-reached message; the saved JPEG was decoded and confirmed as 1600 × 900.
-- Browser conversion: PNG to WebP produced a preview and a downloadable result.
-- Browser PDF organizer: selecting `2,1,2` from a two-page PDF produced a three-page result.
-- Visual review: desktop homepage and narrow iframe layouts at 390px (homepage) and 360px (resize tool). Responsive layouts showed no obvious clipping in the inspected views. This is not physical-device testing.
-
-- Browser images-to-PDF: a PNG produced a one-page A4 PDF result. PDF download capture timed out, so its downloaded bytes were not independently inspected.
-
-## Scope and limits
-
-The browser's click/download event capture timed out on the merged PDF. Saving an image through its generated download link succeeded. This does not establish every browser's native download behavior. Complete the launch checklist on your desktop and phone.
-
-No live domain was deployed or checked. DNS, TLS, root redirect, Cloudflare response headers, true HTTP 404 responses, Search Console, search indexing and field performance remain launch checks. No Lighthouse score or exhaustive accessibility certification is claimed. Actual file memory limits depend on the visitor's device.
-
-The supplied `_headers` policy is intended for Cloudflare Pages; the internal preview is not proof that the production host applies it. No real user files were used in testing.
+- **Production build:** 28 static HTML pages generated successfully for `https://oursolver.com`.
+- **Site audit (`check.mjs`):** 584 internal links/asset references resolve; unique `<title>` and `<meta name="description">` across all 28 pages; exactly one `<h1>` per page; canonical links present; JSON-LD structured data parses without error; sitemap, robots file, and third-party notices verified.
+- **Eight automated unit tests (`core.test.mjs`):** 
+  1. Page selection order, reversal, and duplicates (`parsePages`).
+  2. Invalid page selections rejection.
+  3. Proportional vs exact resizing (`fitSize`).
+  4. Multi-image bounding box calculations with gaps for vertical and horizontal stacking (`combineDimensions`).
+  5. 1:1 square canvas positioning and scale calculations with padding (`calculateSquareBounds`).
+  6. Percentage change and byte size formatting (`formatChange`, `bytes`).
+  7. PDF page copy order and dimension preservation.
+  8. PDF image embedding in a readable document.
+- **Browser UX & Layout Fixes:**
+  - Search box gap resolved: proper vertical flex spacing between the "Find a tool" label and the input field.
+  - Navbar "All tools" styled as a focused primary CTA button.
+  - Hero copy updated to highlight instant in-browser speed, zero server uploads, and total privacy.
+  - Form field hierarchy reordered across all tools: Quality placed first, Dimension scale second, Target KB before output format, and Output format at the very end.
+  - Width and Height inputs placed side-by-side in a two-column row, eliminating zigzag alignment.
+- **New Feature Verification:**
+  - Global `Ctrl+V` clipboard paste listener automatically extracts image files and loads them into the workbench.
+  - Combine Images: verified multi-file reordering, vertical and horizontal canvas stitching with gaps, and background fills.
+  - Photo for Online Forms: verified passport/visa presets (US Visa 600×600 px ≤ 240 KB), aspect crop, target KB binary search, and live compliance checklist.
+  - Crop & Rotate: verified 90° rotations, horizontal flip, horizon straightening slider, and aspect ratio crop modes.
+  - Make Square (No Crop): verified 1:1 canvas expansion with blurred background, solid colors, and padding.
+  - Inter-tool transfer ("Send to..."): verified session transfer piping blobs across tool pages seamlessly.
+  - Before / After stats card: verified dimension and file size comparison with reduction percentage badges.

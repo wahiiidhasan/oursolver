@@ -7,25 +7,81 @@
     "category": "Image",
     "icon": "↗",
     "how": [
-      "Select a JPG, PNG, or WebP image.",
-      "Enter width and height, or keep proportions to prevent stretching.",
-      "Download your resized image."
+      "Select a JPG, PNG, or WebP image or paste from clipboard (Ctrl+V).",
+      "Enter width and height, side-by-side. Keep proportions checked to prevent distortion.",
+      "Download your resized image or send it directly to another tool."
     ],
-    "faq": "Keeping proportions scales the image to fit inside your dimensions without distortion. Disabling it forces the exact width and height."
+    "faq": "Keeping proportions scales the image to fit inside your target dimensions without stretching. Width and height are positioned side-by-side for quick editing."
   },
   {
     "slug": "compress-image",
     "name": "Compress Image",
     "label": "Reduce file size in KB",
-    "description": "Reduce JPG, PNG, and WebP file size without losing quality. Adjust quality, scale dimensions, or set a target KB.",
+    "description": "Reduce JPG and WebP file size without losing quality. Adjust quality, scale dimensions, or set a target KB.",
     "category": "Image",
     "icon": "↘",
     "how": [
       "Select a JPG, PNG, or WebP image.",
-      "Adjust quality, dimension scale, or enter an optional target KB.",
-      "Download your compressed image."
+      "Adjust quality slider at the top, dimension scale below, or set a target KB.",
+      "Download your compressed image with full before-and-after size stats."
     ],
-    "faq": "If a file cannot reach a low target like 25 KB, reduce the Size percentage to scale dimensions down proportionally while keeping details sharp."
+    "faq": "Quality is placed first for quick tuning. If a file cannot reach a low target like 50 KB, reduce the dimension scale percentage proportionally while keeping details crisp."
+  },
+  {
+    "slug": "crop-rotate-image",
+    "name": "Crop & Rotate",
+    "label": "Trim, rotate & straighten",
+    "description": "Crop photos to square or widescreen ratios, rotate in 90-degree steps, flip, and straighten with instant preview.",
+    "category": "Image",
+    "icon": "✂",
+    "how": [
+      "Select an image or press Ctrl+V to paste a screenshot.",
+      "Rotate 90°, flip horizontally, or select an aspect ratio crop (Square, 4:3, 16:9).",
+      "Download your cropped, straightened image or send it to compress."
+    ],
+    "faq": "Cropping trims outer edges cleanly and rotation updates pixel layout directly without sending images to any server."
+  },
+  {
+    "slug": "combine-images",
+    "name": "Combine Images",
+    "label": "Join screenshots & photos",
+    "description": "Join multiple pictures together vertically into a continuous screenshot or horizontally side-by-side with custom spacing.",
+    "category": "Image",
+    "icon": "⫽",
+    "how": [
+      "Select two or more images and arrange their sequence with the arrow buttons.",
+      "Choose vertical stacking for chats/receipts or horizontal for side-by-side comparisons.",
+      "Download your combined single image."
+    ],
+    "faq": "Vertical stacking automatically matches widths or centers panels. You can customize the gap and background color (white, transparent, or dark)."
+  },
+  {
+    "slug": "square-image",
+    "name": "Make Square (No Crop)",
+    "label": "Fit 1:1 without cropping",
+    "description": "Fit rectangular photos into a 1:1 square canvas without cutting off faces or text, using blurred borders or solid colors.",
+    "category": "Image",
+    "icon": "⊡",
+    "how": [
+      "Select any landscape or portrait photo.",
+      "Choose a background style: soft blurred image background, solid white, or black.",
+      "Download your 1:1 square image ready for profile avatars and social feeds."
+    ],
+    "faq": "Square-only avatars often cut off sides of wide photos. This tool fits your entire photo inside the square while filling the border aesthetic cleanly."
+  },
+  {
+    "slug": "photo-for-forms",
+    "name": "Photo Size for Forms",
+    "label": "Passports, visas & IDs",
+    "description": "Prepare photos for visa applications, government portals, and online forms with exact dimensions and strict KB limits.",
+    "category": "Image",
+    "icon": "☑",
+    "how": [
+      "Select your portrait or ID photo.",
+      "Choose a standard preset (US Visa 600×600, Passport 2×2 in, ID photo) or enter custom specs.",
+      "Download your compliant photo with a live requirements checklist."
+    ],
+    "faq": "Government and job portals frequently reject files over 100 KB–240 KB or incorrect aspect ratios. This tool handles both dimensions and compression in a single verified step."
   },
   {
     "slug": "convert-image",
@@ -37,9 +93,9 @@
     "how": [
       "Select a JPG, PNG, or WebP image.",
       "Choose your desired output format.",
-      "Download your converted file."
+      "Download your converted file or send it to compress."
     ],
-    "faq": "PNG and WebP support transparency. Converting transparent images to JPG replaces the transparent background with white."
+    "faq": "PNG and WebP support transparency. Converting transparent images to JPG replaces the transparent background with clean white."
   },
   {
     "slug": "merge-pdf",

@@ -181,6 +181,17 @@ for (const t of tools) {
         <p class="micro">${imageInput ? 'JPG, PNG, WebP' : 'PDF'} · Up to 30 MB per file</p>
       </div>
       <ul class="file-list" id="file-list" aria-label="Selected files"></ul>
+      ${isImage && t.slug !== 'images-to-pdf' ? `
+      <div class="live-preview-stage" id="live-stage" hidden>
+        <div class="live-stage-header">
+          <div class="live-badge"><span class="live-dot"></span> Interactive Live Preview</div>
+          <span class="live-dims" id="live-dims">—</span>
+        </div>
+        <div class="live-canvas-wrap" id="live-canvas-wrap">
+          <canvas id="live-canvas"></canvas>
+        </div>
+        <div class="live-hint" id="live-hint">Live preview updates instantly as you adjust settings</div>
+      </div>` : ''}
       <div class="fields">${fields}</div>
       <div class="actions">
         <button class="button" id="run" type="submit" disabled>Create ${isImage ? 'image' : 'PDF'} ↗</button>

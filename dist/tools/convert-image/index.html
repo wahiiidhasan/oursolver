@@ -19,6 +19,17 @@
         <p class="micro">JPG, PNG, WebP · Up to 30 MB per file</p>
       </div>
       <ul class="file-list" id="file-list" aria-label="Selected files"></ul>
+      
+      <div class="live-preview-stage" id="live-stage" hidden>
+        <div class="live-stage-header">
+          <div class="live-badge"><span class="live-dot"></span> Interactive Live Preview</div>
+          <span class="live-dims" id="live-dims">—</span>
+        </div>
+        <div class="live-canvas-wrap" id="live-canvas-wrap">
+          <canvas id="live-canvas"></canvas>
+        </div>
+        <div class="live-hint" id="live-hint">Live preview updates instantly as you adjust settings</div>
+      </div>
       <div class="fields">
       <label class="field wide"><div class="field-header"><span>Quality</span><span id="quality-value" class="field-val">85%</span></div><input id="quality" type="range" min="5" max="100" value="85"><span class="micro">For JPG and WebP outputs.</span></label>
       <label class="field wide">Output format<select id="format"><option value="image/jpeg">JPG (white background)</option><option value="image/png">PNG (supports transparency)</option><option value="image/webp">WebP (supports transparency)</option></select></label>

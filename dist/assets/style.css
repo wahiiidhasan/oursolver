@@ -40,3 +40,14 @@ section.wrap{padding-top:56px;padding-bottom:56px}.tool-layout>*{min-width:0}@me
 .btn-group button{padding:8px 14px;border:1px solid var(--line);background:white;border-radius:6px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;transition:all .15s}
 .btn-group button.active,.btn-group button:hover{background:var(--ink);color:white;border-color:var(--ink)}
 @media(max-width:520px){.field-row{grid-template-columns:1fr}}
+
+/* Interactive Live Preview Stage */
+.live-preview-stage{background:#0e241e;color:white;border-radius:12px;padding:16px 20px;margin:20px 0;border:1px solid #1f453a;box-shadow:inset 0 2px 6px rgba(0,0,0,0.2)}
+.live-stage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+.live-badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:bold;letter-spacing:1px;color:#7de8b0;text-transform:uppercase}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#27e085;box-shadow:0 0 8px #27e085;animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+.live-dims{font-size:13px;font-weight:600;color:#c6dcd1;background:rgba(255,255,255,.1);padding:4px 10px;border-radius:6px}
+.live-canvas-wrap{display:flex;justify-content:center;align-items:center;min-height:200px;max-height:420px;overflow:hidden;background:repeating-conic-gradient(#172e27 0% 25%,#12241f 0% 50%) 50%/20px 20px;border-radius:8px;padding:12px;border:1px solid #1c3d33}
+.live-canvas-wrap canvas{max-width:100%;max-height:390px;width:auto;height:auto;object-fit:contain;box-shadow:0 6px 20px rgba(0,0,0,.4);border-radius:4px;display:block}
+.live-hint{text-align:center;font-size:12px;color:#8ba597;margin-top:10px}

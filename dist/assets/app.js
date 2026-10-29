@@ -35,6 +35,11 @@ if (root) {
   const results = $('#results');
   const run = $('#run');
 
+  const liveStage = $('#live-stage');
+  const liveCanvas = $('#live-canvas');
+  const liveDims = $('#live-dims');
+  const liveHint = $('#live-hint');
+
   let files = [];
   let urls = [];
   let busy = false;
@@ -69,6 +74,24 @@ if (root) {
   }
 
   const previewUrls = new Map();
+  const bitmapCache = new Map();
+
+  async function getBitmap(file) {
+    if (bitmapCache.has(file)) return bitmapCache.get(file);
+    const bmp = await decode(file);
+    bitmapCache.set(file, bmp);
+    return bmp;
+  }
+
+  function clearBitmapCache() {
+    for (const [file, bmp] of bitmapCache) {
+      if (!files.includes(file)) {
+        try { bmp.close(); } catch (e) {}
+        bitmapCache.delete(file);
+      }
+    }
+  }
+
   const selection = document.createElement('div');
   selection.className = 'selection-summary';
   selection.hidden = true;
@@ -79,7 +102,195 @@ if (root) {
   const dropTitle = $('#drop strong');
   const originalDropTitle = dropTitle.textContent;
 
+  // Live interactive preview engine
+  let previewTicket = 0;
+  function scheduleLivePreview() {
+    if (!imageMode || tool === 'images-to-pdf' || !files.length || !liveCanvas) {
+      if (liveStage) liveStage.hidden = true;
+      return;
+    }
+    if (liveStage) liveStage.hidden = false;
+    previewTicket++;
+    const currentTicket = previewTicket;
+    requestAnimationFrame(() => renderLivePreview(currentTicket));
+  }
+
+  async function renderLivePreview(ticket) {
+    if (ticket !== previewTicket || !files.length || !liveCanvas) return;
+    try {
+      if (tool === 'crop-rotate-image') {
+        const bmp = await getBitmap(files[0]);
+        if (ticket !== previewTicket) return;
+        const aspect = $('#aspect')?.value || 'original';
+        const straightenDeg = Number($('#angle')?.value || 0);
+
+        let sx = 0, sy = 0, sw = bmp.width, sh = bmp.height;
+        if (aspect === '1:1') {
+          const side = Math.min(sw, sh);
+          sx = Math.round((sw - side) / 2);
+          sy = Math.round((sh - side) / 2);
+          sw = side;
+          sh = side;
+        } else if (aspect === '4:3' || aspect === '16:9' || aspect === '3:2') {
+          const ratio = aspect === '4:3' ? 4 / 3 : aspect === '16:9' ? 16 / 9 : 3 / 2;
+          if (sw / sh > ratio) {
+            const targetW = Math.round(sh * ratio);
+            sx = Math.round((sw - targetW) / 2);
+            sw = targetW;
+          } else {
+            const targetH = Math.round(sw / ratio);
+            sy = Math.round((sh - targetH) / 2);
+            sh = targetH;
+          }
+        }
+
+        const rad = ((rotateDegrees + straightenDeg) * Math.PI) / 180;
+        const sin = Math.abs(Math.sin(rad));
+        const cos = Math.abs(Math.cos(rad));
+        const outW = Math.round(sw * cos + sh * sin);
+        const outH = Math.round(sw * sin + sh * cos);
+
+        liveCanvas.width = outW;
+        liveCanvas.height = outH;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.clearRect(0, 0, outW, outH);
+        ctx.save();
+        ctx.translate(outW / 2, outH / 2);
+        ctx.rotate(rad);
+        if (flipHorizontal) ctx.scale(-1, 1);
+        ctx.drawImage(bmp, sx, sy, sw, sh, -sw / 2, -sh / 2, sw, sh);
+        ctx.restore();
+
+        if (liveDims) liveDims.textContent = `${outW} × ${outH} px · ${aspect === 'original' ? 'Original Ratio' : aspect}`;
+        if (liveHint) liveHint.textContent = `Rotation: ${rotateDegrees}° · Tilt: ${straightenDeg}° · Flip: ${flipHorizontal ? 'Horizontal' : 'None'}`;
+      } else if (tool === 'square-image') {
+        const bmp = await getBitmap(files[0]);
+        if (ticket !== previewTicket) return;
+        const bgStyle = $('#square-bg')?.value || 'blur';
+        const padPct = Number($('#pad')?.value || 0) / 100;
+        const bounds = calculateSquareBounds(bmp.width, bmp.height, padPct);
+
+        liveCanvas.width = bounds.size;
+        liveCanvas.height = bounds.size;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.clearRect(0, 0, bounds.size, bounds.size);
+
+        if (bgStyle === 'blur') {
+          ctx.save();
+          ctx.filter = 'blur(24px) brightness(0.85)';
+          ctx.drawImage(bmp, 0, 0, bounds.size, bounds.size);
+          ctx.restore();
+        } else if (bgStyle === 'white') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, bounds.size, bounds.size);
+        } else if (bgStyle === 'black') {
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, bounds.size, bounds.size);
+        }
+
+        ctx.drawImage(bmp, bounds.x, bounds.y, bounds.drawW, bounds.drawH);
+        if (liveDims) liveDims.textContent = `${bounds.size} × ${bounds.size} px (1:1 Square Canvas)`;
+        if (liveHint) liveHint.textContent = `Background: ${bgStyle} · Inner Padding: ${Math.round(padPct * 100)}%`;
+      } else if (tool === 'combine-images') {
+        const bitmaps = await Promise.all(files.map(f => getBitmap(f)));
+        if (ticket !== previewTicket) return;
+        const dir = $('#direction')?.value || 'vertical';
+        const gap = Number($('#gap')?.value || 0);
+        const bg = $('#bg-color')?.value || 'transparent';
+
+        const sizes = bitmaps.map(b => ({ w: b.width, h: b.height }));
+        const [totW, totH] = combineDimensions(sizes, dir, gap);
+
+        liveCanvas.width = totW;
+        liveCanvas.height = totH;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.clearRect(0, 0, totW, totH);
+
+        if (bg !== 'transparent') {
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, totW, totH);
+        }
+
+        let curOffset = 0;
+        bitmaps.forEach(b => {
+          if (dir === 'vertical') {
+            const x = Math.round((totW - b.width) / 2);
+            ctx.drawImage(b, x, curOffset);
+            curOffset += b.height + gap;
+          } else {
+            const y = Math.round((totH - b.height) / 2);
+            ctx.drawImage(b, curOffset, y);
+            curOffset += b.width + gap;
+          }
+        });
+
+        if (liveDims) liveDims.textContent = `${totW} × ${totH} px · ${files.length} images combined`;
+        if (liveHint) liveHint.textContent = `Direction: ${dir} · Gap: ${gap}px · Background: ${bg}`;
+      } else if (tool === 'photo-for-forms') {
+        const bmp = await getBitmap(files[0]);
+        if (ticket !== previewTicket) return;
+        const reqW = Number($('#form-w')?.value || 600);
+        const reqH = Number($('#form-h')?.value || 600);
+        const targetRatio = reqW / reqH;
+        const curRatio = bmp.width / bmp.height;
+
+        let sw = bmp.width, sh = bmp.height, sx = 0, sy = 0;
+        if (curRatio > targetRatio) {
+          sw = Math.round(bmp.height * targetRatio);
+          sx = Math.round((bmp.width - sw) / 2);
+        } else {
+          sh = Math.round(bmp.width / targetRatio);
+          sy = Math.round((bmp.height - sh) / 2);
+        }
+
+        liveCanvas.width = reqW;
+        liveCanvas.height = reqH;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, reqW, reqH);
+        ctx.drawImage(bmp, sx, sy, sw, sh, 0, 0, reqW, reqH);
+
+        if (liveDims) liveDims.textContent = `${reqW} × ${reqH} px · Form Passport/ID Frame`;
+        if (liveHint) liveHint.textContent = `Max limit: ≤ ${$('#form-kb')?.value || 240} KB`;
+      } else if (tool === 'resize-image') {
+        const bmp = await getBitmap(files[0]);
+        if (ticket !== previewTicket) return;
+        const [w, h] = fitSize(bmp.width, bmp.height, Number($('#width')?.value || 1200), Number($('#height')?.value || 1200), $('#proportions')?.checked);
+        liveCanvas.width = w;
+        liveCanvas.height = h;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.drawImage(bmp, 0, 0, w, h);
+        if (liveDims) liveDims.textContent = `${w} × ${h} px (${$('#proportions')?.checked ? 'Proportional Fit' : 'Exact'})`;
+        if (liveHint) liveHint.textContent = `Original: ${bmp.width} × ${bmp.height} px`;
+      } else if (tool === 'compress-image') {
+        const bmp = await getBitmap(files[0]);
+        if (ticket !== previewTicket) return;
+        const s = Number($('#scale')?.value || 100) / 100;
+        const w = Math.round(bmp.width * s);
+        const h = Math.round(bmp.height * s);
+        liveCanvas.width = w;
+        liveCanvas.height = h;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.drawImage(bmp, 0, 0, w, h);
+        if (liveDims) liveDims.textContent = `${w} × ${h} px · Scale: ${Math.round(s * 100)}%`;
+        if (liveHint) liveHint.textContent = `Quality: ${$('#quality')?.value || 85}% · Source: ${bmp.width} × ${bmp.height} px`;
+      } else if (tool === 'convert-image') {
+        const bmp = await getBitmap(files[0]);
+        if (ticket !== previewTicket) return;
+        liveCanvas.width = bmp.width;
+        liveCanvas.height = bmp.height;
+        const ctx = liveCanvas.getContext('2d');
+        ctx.drawImage(bmp, 0, 0);
+        if (liveDims) liveDims.textContent = `${bmp.width} × ${bmp.height} px`;
+        if (liveHint) liveHint.textContent = `Target Format: ${$('#format')?.value?.split('/')[1]?.toUpperCase()}`;
+      }
+    } catch (e) {
+      console.warn('Live preview render error:', e);
+    }
+  }
+
   function render() {
+    clearBitmapCache();
     for (const [file, url] of previewUrls) {
       if (!files.includes(file)) {
         URL.revokeObjectURL(url);
@@ -100,7 +311,7 @@ if (root) {
       const heading = document.createElement('strong');
       const detail = document.createElement('p');
       heading.textContent = `${count} file${count === 1 ? '' : 's'} selected`;
-      detail.textContent = `${bytes(files.reduce((n, f) => n + f.size, 0))} total · Files stay on your device. ${multi ? 'Arrange sequence below, then click Create.' : 'Adjust settings below and create your result.'}`;
+      detail.textContent = `${bytes(files.reduce((n, f) => n + f.size, 0))} total · Files stay on your device. ${multi ? 'Arrange sequence below, then inspect live preview.' : 'Adjust settings below and inspect live preview.'}`;
       copy.append(heading, detail);
       selection.append(check, copy);
     }
@@ -156,6 +367,7 @@ if (root) {
           clearResults();
           render();
           message(files.length ? `${files.length} file${files.length === 1 ? '' : 's'} ready. Adjust settings and run.` : 'No files selected. Choose a file to start.');
+          scheduleLivePreview();
         };
         actions.append(b);
       }
@@ -164,6 +376,7 @@ if (root) {
     });
 
     run.disabled = busy || !count;
+    scheduleLivePreview();
   }
 
   async function select(incoming) {
@@ -188,18 +401,18 @@ if (root) {
 
     files = next;
     render();
-    message(`${files.length} file${files.length === 1 ? '' : 's'} ready. Files stay on this device.`);
+    message(`${files.length} file${files.length === 1 ? '' : 's'} ready. Live preview updated.`);
 
     // Auto-fill original dimensions if resizer
     if (tool === 'resize-image' && files[0]) {
       try {
-        const bmp = await createImageBitmap(files[0]);
+        const bmp = await getBitmap(files[0]);
         if (ticket === generation) {
           $('#width').value = bmp.width;
           $('#height').value = bmp.height;
-          message(`Loaded: ${bmp.width} × ${bmp.height} px. Enter target dimensions.`);
+          message(`Loaded: ${bmp.width} × ${bmp.height} px. Live preview ready.`);
+          scheduleLivePreview();
         }
-        bmp.close();
       } catch (e) {}
     }
 
@@ -238,7 +451,7 @@ if (root) {
     if (pasted.length && imageMode) {
       e.preventDefault();
       select(pasted);
-      message(`${pasted.length} image pasted from clipboard! Ready to process.`);
+      message(`${pasted.length} image pasted from clipboard! Live preview ready.`);
     }
   });
 
@@ -261,30 +474,56 @@ if (root) {
     flipHorizontal = false;
     clearResults();
     render();
+    if (liveStage) liveStage.hidden = true;
     message('Files cleared. Choose a file or paste from clipboard (Ctrl+V) to start.');
   };
 
-  // Slider feedback
+  // Slider and input feedback listeners that trigger live preview updates
   const quality = $('#quality');
-  quality?.addEventListener('input', () => $('#quality-value').textContent = `${quality.value}%`);
-  const scale = $('#scale');
-  scale?.addEventListener('input', () => $('#scale-value').textContent = `${scale.value}%`);
-  const pad = $('#pad');
-  pad?.addEventListener('input', () => $('#pad-value').textContent = `${pad.value}%`);
-  const angle = $('#angle');
-  angle?.addEventListener('input', () => $('#angle-value').textContent = `${angle.value}°`);
+  quality?.addEventListener('input', () => {
+    $('#quality-value').textContent = `${quality.value}%`;
+    scheduleLivePreview();
+  });
 
-  // Crop & rotate buttons
+  const scale = $('#scale');
+  scale?.addEventListener('input', () => {
+    $('#scale-value').textContent = `${scale.value}%`;
+    scheduleLivePreview();
+  });
+
+  const pad = $('#pad');
+  pad?.addEventListener('input', () => {
+    $('#pad-value').textContent = `${pad.value}%`;
+    scheduleLivePreview();
+  });
+
+  const angle = $('#angle');
+  angle?.addEventListener('input', () => {
+    $('#angle-value').textContent = `${angle.value}°`;
+    scheduleLivePreview();
+  });
+
+  // Watch all field changes for instant real-time live preview updates
+  const fieldsContainer = $('.fields');
+  fieldsContainer?.addEventListener('input', scheduleLivePreview);
+  fieldsContainer?.addEventListener('change', scheduleLivePreview);
+
+  // Crop & rotate live interaction buttons
   $('#btn-rot-left')?.addEventListener('click', () => {
     rotateDegrees = (rotateDegrees - 90 + 360) % 360;
+    scheduleLivePreview();
     message(`Rotated left 90° (Total: ${rotateDegrees}°).`);
   });
+
   $('#btn-rot-right')?.addEventListener('click', () => {
     rotateDegrees = (rotateDegrees + 90) % 360;
+    scheduleLivePreview();
     message(`Rotated right 90° (Total: ${rotateDegrees}°).`);
   });
+
   $('#btn-flip')?.addEventListener('click', () => {
     flipHorizontal = !flipHorizontal;
+    scheduleLivePreview();
     message(`Horizontal flip: ${flipHorizontal ? 'ON' : 'OFF'}.`);
   });
 
@@ -309,6 +548,7 @@ if (root) {
       $('#form-h').value = 400;
       $('#form-kb').value = 50;
     }
+    scheduleLivePreview();
   });
 
   async function decode(file) {
@@ -452,7 +692,7 @@ if (root) {
     clearResults();
     render();
     root.querySelectorAll('input,select,#clear,button[type=button]').forEach(el => el.disabled = true);
-    message('Processing on your device…');
+    message('Processing high-resolution output…');
 
     try {
       if (['resize-image', 'compress-image', 'convert-image', 'crop-rotate-image', 'square-image', 'photo-for-forms'].includes(tool)) {
@@ -519,15 +759,6 @@ if (root) {
             }
           }
 
-          // Crop to intermediate canvas
-          const cropC = document.createElement('canvas');
-          cropC.width = sw;
-          cropC.height = sh;
-          const cropCtx = cropC.getContext('2d');
-          cropCtx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
-          img.close();
-
-          // Apply rotation, flip, and straightening
           const rad = ((rotateDegrees + straightenDeg) * Math.PI) / 180;
           const sin = Math.abs(Math.sin(rad));
           const cos = Math.abs(Math.cos(rad));
@@ -544,7 +775,8 @@ if (root) {
           ctx.translate(w / 2, h / 2);
           ctx.rotate(rad);
           if (flipHorizontal) ctx.scale(-1, 1);
-          ctx.drawImage(cropC, -sw / 2, -sh / 2);
+          ctx.drawImage(img, sx, sy, sw, sh, -sw / 2, -sh / 2, sw, sh);
+          img.close();
         } else if (tool === 'square-image') {
           const bgStyle = $('#square-bg')?.value || 'blur';
           const padPct = Number($('#pad')?.value || 0) / 100;
@@ -779,6 +1011,10 @@ if (root) {
     urls.forEach(URL.revokeObjectURL);
     previewUrls.forEach(URL.revokeObjectURL);
     previewUrls.clear();
+    for (const bmp of bitmapCache.values()) {
+      try { bmp.close(); } catch (e) {}
+    }
+    bitmapCache.clear();
   });
 
   window.addEventListener('pageshow', e => {

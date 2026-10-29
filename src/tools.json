@@ -1,8 +1,86 @@
 [
-{"slug":"resize-image","name":"Resize image","label":"Make it the right size","description":"Resize JPG, PNG and WebP images to exact dimensions or fit them inside a bounding box.","category":"Image","icon":"↗","how":["Choose an image from your device.","Enter a width and height. Keep proportions to fit inside those dimensions.","Create your image and download the result."],"faq":"Keeping proportions fits the image inside your chosen width and height. Turning it off stretches the image to those exact dimensions."},
-{"slug":"compress-image","name":"Compress image","label":"Less weight. Same story.","description":"Reduce image file size with adjustable quality and an optional target in KB.","category":"Image","icon":"↘","how":["Choose a JPG, PNG or WebP image.","Select JPG or WebP, then set quality or a target file size.","Compare the output size and download. If the target is too small, reduce dimensions first."],"faq":"Compression cannot guarantee every size target. The tool reports whether it reached your target. PNG inputs are converted to the selected format; JPG uses a white background for transparency."},
-{"slug":"convert-image","name":"Convert image","label":"A format that fits","description":"Convert between JPG, PNG and WebP in your browser, with a preview before download.","category":"Image","icon":"⇄","how":["Choose a supported image.","Choose JPG, PNG or WebP as the output format.","Create and download the converted image."],"faq":"PNG and WebP can preserve transparency. JPG cannot, so transparent areas become white. Animated files, SVG and HEIC are not supported."},
-{"slug":"merge-pdf","name":"Merge PDF","label":"Bring it all together","description":"Combine multiple PDF files into a single document in the order you choose.","category":"PDF","icon":"⊕","how":["Choose two or more PDF files.","Move files up or down to arrange the final document.","Merge and download your combined PDF."],"faq":"Password-protected PDFs are not supported. Page content is copied, but interactive forms, bookmarks, attachments and digital signatures may not survive. Keep your originals."},
-{"slug":"organize-pdf","name":"Organize PDF","label":"Just the pages you need","description":"Extract, duplicate or reorder PDF pages by choosing a custom page sequence.","category":"PDF","icon":"▤","how":["Choose one PDF and check its page count.","Enter pages such as 3,1-2 to extract or reorder them. Repeating a page duplicates it.","Create and download a new PDF containing your selection."],"faq":"Page numbers start at 1. A range such as 4-2 reverses those pages. This tool produces one selected-pages PDF, not a ZIP of separate files."},
-{"slug":"images-to-pdf","name":"Images to PDF","label":"Your pictures, one document","description":"Turn JPG, PNG and WebP images into a neatly arranged PDF with one image per page.","category":"PDF","icon":"▧","how":["Choose your images and arrange them in order.","Choose A4, Letter or pages sized to each image.","Create and download your PDF."],"faq":"Images fit inside the page without cropping. A4 and Letter use white margins. Text in a photograph stays an image: this tool does not perform OCR."}
+  {
+    "slug": "resize-image",
+    "name": "Resize Image Online",
+    "label": "Change Dimensions & Scale in Seconds",
+    "description": "Resize JPG, PNG, and WebP images online for free. Adjust image dimensions to exact pixels or scale proportionally while preserving crisp visual quality.",
+    "category": "Image",
+    "icon": "↗",
+    "how": [
+      "Select a JPG, PNG, or WebP image from your device.",
+      "Enter your target width and height in pixels, or keep proportions to fit cleanly inside dimensions.",
+      "Click to resize and download your optimized image instantly."
+    ],
+    "faq": "Keeping proportions active scales your photo proportionally to fit inside your target width and height without distortion. Disabling it stretches or squashes the image to match exact pixel numbers."
+  },
+  {
+    "slug": "compress-image",
+    "name": "Best Image Compressor",
+    "label": "Reduce Image Size in KB at Optimal Quality",
+    "description": "Compress JPG, PNG, and WebP images online for free. Reduce image file size to custom KB targets or scale dimensions without losing visual quality.",
+    "category": "Image",
+    "icon": "↘",
+    "how": [
+      "Choose a JPG, PNG, or WebP file to compress.",
+      "Set your desired quality percentage, dimension scale, or specify an optional target file size in KB.",
+      "Compare the compressed file size and download your optimized image immediately."
+    ],
+    "faq": "Can all images reach very small targets like 20 KB? If an image has high pixel dimensions, lowering quality alone reaches a compression floor. Use the Size percentage slider to downscale dimensions proportionally and hit small KB limits while keeping details sharp."
+  },
+  {
+    "slug": "convert-image",
+    "name": "Image Converter Online",
+    "label": "Convert JPG, PNG & WebP in Seconds",
+    "description": "Free online image converter to quickly transform photos between JPG, PNG, and WebP formats directly in your browser with instant preview.",
+    "category": "Image",
+    "icon": "⇄",
+    "how": [
+      "Select any supported JPG, PNG, or WebP picture.",
+      "Choose your desired output format (JPG for maximum compatibility, PNG or WebP for transparency).",
+      "Convert and download your new image file instantly."
+    ],
+    "faq": "PNG and WebP formats fully support background transparency. Converting a transparent PNG to JPG will automatically replace transparent areas with a clean white background."
+  },
+  {
+    "slug": "merge-pdf",
+    "name": "Merge PDF Online",
+    "label": "Combine Multiple PDF Files Into One",
+    "description": "Merge PDF files online for free in your browser. Combine multiple PDF documents into a single organized file in any custom order with 100% privacy.",
+    "category": "PDF",
+    "icon": "⊕",
+    "how": [
+      "Select two or more PDF files from your computer or phone.",
+      "Use the up and down arrows to arrange documents in the exact order you want them merged.",
+      "Click merge and download your unified PDF document."
+    ],
+    "faq": "Does merging keep document quality? Yes, all original page vectors, text, and graphics remain intact. Note that password-protected or heavily encrypted PDFs must be unlocked before merging."
+  },
+  {
+    "slug": "organize-pdf",
+    "name": "Organize & Reorder PDF Pages",
+    "label": "Extract, Delete, Rearrange & Sort Pages",
+    "description": "Organize and rearrange PDF pages online for free. Extract specific pages, change page sequences, or duplicate sheets with complete client-side security.",
+    "category": "PDF",
+    "icon": "▤",
+    "how": [
+      "Choose a PDF file to view its total page count.",
+      "Enter your desired sequence (for example: 3, 1-2, 5) to reorder, extract, or duplicate pages.",
+      "Generate and download your freshly organized PDF."
+    ],
+    "faq": "How do page ranges work? Entering '1-5' includes pages one through five in standard order, while entering '5-1' reverses their sequence. Unlisted pages are excluded from the output."
+  },
+  {
+    "slug": "images-to-pdf",
+    "name": "Images to PDF Converter",
+    "label": "Convert Photos & Pictures to PDF Document",
+    "description": "Convert JPG, PNG, and WebP photos into a single PDF document online. Combine multiple pictures into neat A4, US Letter, or original aspect ratio pages.",
+    "category": "PDF",
+    "icon": "▧",
+    "how": [
+      "Select your photos or documents and order them as needed.",
+      "Pick your preferred layout: standard A4 portrait, US Letter, or fit page to original image size.",
+      "Create and download your formatted PDF document."
+    ],
+    "faq": "Will my images be cropped? No, images fit proportionally inside your chosen page boundaries without cropping. Standard A4 and Letter choices center images with clean margins."
+  }
 ]

@@ -11,8 +11,40 @@ if(root){
  const imageMode=['resize-image','compress-image','convert-image','images-to-pdf'].includes(tool);
  function clearResults(){urls.forEach(URL.revokeObjectURL);urls=[];results.replaceChildren();}
  function message(t,error=false){status.textContent=t;status.classList.toggle('error',error);}
- function render(){list.replaceChildren();files.forEach((f,i)=>{const row=document.createElement('li');const text=document.createElement('span');text.textContent=`${i+1}. ${f.name} · ${bytes(f.size)}`;row.append(text);for(const [label,delta]of [['↑',-1],['↓',1],['×',0]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-label',`${delta<0?'Move up':delta>0?'Move down':'Remove'} ${f.name}`);b.disabled=busy||(delta<0&&i===0)||(delta>0&&i===files.length-1);b.onclick=()=>{if(delta)[files[i],files[i+delta]]=[files[i+delta],files[i]];else files.splice(i,1);generation++;clearResults();render();};row.append(b);}list.append(row);});run.disabled=busy||!files.length;}
- async function select(incoming){if(busy)return;generation++;const ticket=generation;clearResults();const a=Array.from(incoming);const valid=imageMode?/\.(jpe?g|png|webp)$/i:/\.pdf$/i;
+ const previewUrls=new Map();
+ const selection=document.createElement('div');selection.className='selection-summary';selection.hidden=true;selection.setAttribute('role','status');selection.setAttribute('aria-live','polite');list.before(selection);
+ const dropTitle=$('#drop strong'),originalDropTitle=dropTitle.textContent;
+ function render(){
+  for(const [file,url] of previewUrls){if(!files.includes(file)){URL.revokeObjectURL(url);previewUrls.delete(file);}}
+  const count=files.length,multi=['merge-pdf','images-to-pdf'].includes(tool);
+  root.classList.toggle('has-files',count>0);selection.hidden=!count;
+  selection.replaceChildren();
+  if(count){const check=document.createElement('span');check.className='selection-check';check.textContent='✓';check.setAttribute('aria-hidden','true');
+   const copy=document.createElement('div'),heading=document.createElement('strong'),detail=document.createElement('p');
+   heading.textContent=`${count} file${count===1?'':'s'} selected`;
+   detail.textContent=`${bytes(files.reduce((n,f)=>n+f.size,0))} total · Files stay on your device. ${multi?'Arrange them below, then choose your settings.':'Choose your settings below to continue.'}`;
+   copy.append(heading,detail);selection.append(check,copy);
+  }
+  dropTitle.textContent=count?(multi?'Add more files if you need them':'Choose another file to replace this one'):originalDropTitle;
+  list.replaceChildren();files.forEach((f,i)=>{
+   const row=document.createElement('li');row.className='selected-file';
+   const visual=document.createElement('div');visual.className='file-preview';
+   const badge=document.createElement('span');badge.className='file-type';badge.textContent=imageMode?'IMG':'PDF';visual.append(badge);
+   if(imageMode){if(!previewUrls.has(f))previewUrls.set(f,URL.createObjectURL(f));const img=document.createElement('img');img.src=previewUrls.get(f);img.alt='';img.loading='lazy';img.onerror=()=>img.remove();visual.append(img);}
+   const info=document.createElement('div');info.className='file-info';const name=document.createElement('strong');name.textContent=f.name;
+   const detail=document.createElement('p');detail.textContent=`${bytes(f.size)} · ${f.name.split('.').pop().toUpperCase()}`;
+   const order=document.createElement('span');order.className='file-order';order.textContent=multi?`File ${i+1} of ${count}`:'Selected file';info.append(order,name,detail);
+   const actions=document.createElement('div');actions.className='file-actions';
+   for(const [label,delta]of [...(multi?[['↑',-1],['↓',1]]:[]),['Remove',0]]){
+    const b=document.createElement('button');b.type='button';b.textContent=label;b.title=delta<0?'Move up':delta>0?'Move down':'Remove file';b.setAttribute('aria-label',`${delta<0?'Move up':delta>0?'Move down':'Remove'} ${f.name}`);
+    b.disabled=busy||(delta<0&&i===0)||(delta>0&&i===count-1);
+    b.onclick=()=>{if(busy)return;if(delta)[files[i],files[i+delta]]=[files[i+delta],files[i]];else files.splice(i,1);generation++;clearResults();render();message(files.length?`${files.length} file${files.length===1?'':'s'} selected. Choose your settings and create the result.`:'No files selected. Choose a file to start.');};actions.append(b);
+   }
+   row.append(visual,info,actions);list.append(row);
+  });run.disabled=busy||!count;
+ }
+
+ async function select(incoming){if(busy)return;generation++;const ticket=generation;clearResults();const a=Array.from(incoming);if(!a.length)return;const valid=imageMode?/\.(jpe?g|png|webp)$/i:/\.pdf$/i;
  if(a.some(f=>!valid.test(f.name))){message(imageMode?'Choose JPG, PNG or WebP files.':'Choose PDF files.',true);return;}
  const multi=['merge-pdf','images-to-pdf'].includes(tool);const next=multi?[...files,...a]:a.slice(0,1);
  if(next.length>30||next.some(f=>f.size>30*1024*1024)||next.reduce((n,f)=>n+f.size,0)>100*1024*1024){message('Use up to 30 files, 30 MB per file, and 100 MB total.',true);return;}
@@ -51,5 +83,6 @@ if(root){
  message('Done. Your download is ready.');
  }catch(error){message(error.message||'Processing failed. Try a smaller file or a different browser.',true);}finally{busy=false;root.querySelectorAll('input,select,#clear').forEach(el=>el.disabled=false);render();}
  });
- window.addEventListener('pagehide',()=>urls.forEach(URL.revokeObjectURL));
+ window.addEventListener('pagehide',()=>{urls.forEach(URL.revokeObjectURL);previewUrls.forEach(URL.revokeObjectURL);previewUrls.clear();});
+ window.addEventListener('pageshow',e=>{if(e.persisted){clearResults();render();}});
 }

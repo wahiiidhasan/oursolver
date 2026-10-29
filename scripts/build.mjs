@@ -118,9 +118,12 @@ for (const t of tools) {
     fields = `
       <div class="field-row">
         <label class="field">Arrangement Direction<select id="direction"><option value="vertical">Vertical (Stack Top to Bottom)</option><option value="horizontal">Horizontal (Side-by-Side)</option></select></label>
-        <label class="field">Spacing Gap (px)<input id="gap" type="number" min="0" max="200" value="0"></label>
+        <label class="field">Size Alignment<select id="match-size"><option value="match" selected>Match Width / Height (Equal Width)</option><option value="original">Original Sizes (Uneven)</option></select></label>
       </div>
-      <label class="field wide">Background Color<select id="bg-color"><option value="transparent">Transparent (PNG / WebP)</option><option value="#ffffff">Clean White</option><option value="#000000">Solid Black</option><option value="#f5f7f1">Soft Cream</option></select></label>
+      <div class="field-row">
+        <label class="field">Spacing Gap (px)<input id="gap" type="number" min="0" max="200" value="0"></label>
+        <label class="field">Background Color<select id="bg-color"><option value="transparent">Transparent (PNG / WebP)</option><option value="#ffffff">Clean White</option><option value="#000000">Solid Black</option><option value="#f5f7f1">Soft Cream</option></select></label>
+      </div>
       <label class="field wide"><div class="field-header"><span>Quality</span><span id="quality-value" class="field-val">90%</span></div><input id="quality" type="range" min="5" max="100" value="90"></label>
       ${format}
     `;

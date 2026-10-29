@@ -18,19 +18,37 @@ export function fitSize(w,h,maxW,maxH,keep=true){
  return keep?[Math.max(1,Math.round(w*r)),Math.max(1,Math.round(h*r))]:[Math.round(maxW),Math.round(maxH)];
 }
 
-export function combineDimensions(sizes,direction='vertical',gap=0){
+export function combineDimensions(sizes,direction='vertical',gap=0,matchSize=true){
  if(!Array.isArray(sizes)||!sizes.length)throw Error('At least one image size is required.');
  for(const s of sizes){
   if(!Number.isFinite(s.w)||!Number.isFinite(s.h)||s.w<=0||s.h<=0)throw Error('All image dimensions must be positive numbers.');
  }
  if(direction==='vertical'){
-  const width=Math.max(...sizes.map(s=>s.w));
-  const height=sizes.reduce((sum,s)=>sum+s.h,0)+Math.max(0,sizes.length-1)*gap;
-  return [width,height];
+  const targetW=Math.max(...sizes.map(s=>s.w));
+  if(matchSize){
+   const items=sizes.map(s=>{
+    const scale=targetW/s.w;
+    return {w:targetW,h:Math.round(s.h*scale)};
+   });
+   const height=items.reduce((sum,s)=>sum+s.h,0)+Math.max(0,sizes.length-1)*gap;
+   return [targetW,height,items];
+  }else{
+   const height=sizes.reduce((sum,s)=>sum+s.h,0)+Math.max(0,sizes.length-1)*gap;
+   return [targetW,height,sizes.map(s=>({w:s.w,h:s.h}))];
+  }
  }else{
-  const width=sizes.reduce((sum,s)=>sum+s.w,0)+Math.max(0,sizes.length-1)*gap;
-  const height=Math.max(...sizes.map(s=>s.h));
-  return [width,height];
+  const targetH=Math.max(...sizes.map(s=>s.h));
+  if(matchSize){
+   const items=sizes.map(s=>{
+    const scale=targetH/s.h;
+    return {w:Math.round(s.w*scale),h:targetH};
+   });
+   const width=items.reduce((sum,s)=>sum+s.w,0)+Math.max(0,sizes.length-1)*gap;
+   return [width,targetH,items];
+  }else{
+   const width=sizes.reduce((sum,s)=>sum+s.w,0)+Math.max(0,sizes.length-1)*gap;
+   return [width,targetH,sizes.map(s=>({w:s.w,h:s.h}))];
+  }
  }
 }
 

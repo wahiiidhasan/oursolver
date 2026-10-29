@@ -197,9 +197,10 @@ if (root) {
         const dir = $('#direction')?.value || 'vertical';
         const gap = Number($('#gap')?.value || 0);
         const bg = $('#bg-color')?.value || 'transparent';
+        const match = $('#match-size') ? $('#match-size').value !== 'original' : true;
 
         const sizes = bitmaps.map(b => ({ w: b.width, h: b.height }));
-        const [totW, totH] = combineDimensions(sizes, dir, gap);
+        const [totW, totH, items] = combineDimensions(sizes, dir, gap, match);
 
         liveCanvas.width = totW;
         liveCanvas.height = totH;
@@ -212,20 +213,21 @@ if (root) {
         }
 
         let curOffset = 0;
-        bitmaps.forEach(b => {
+        bitmaps.forEach((b, idx) => {
+          const item = items[idx];
           if (dir === 'vertical') {
-            const x = Math.round((totW - b.width) / 2);
-            ctx.drawImage(b, x, curOffset);
-            curOffset += b.height + gap;
+            const x = Math.round((totW - item.w) / 2);
+            ctx.drawImage(b, 0, 0, b.width, b.height, x, curOffset, item.w, item.h);
+            curOffset += item.h + gap;
           } else {
-            const y = Math.round((totH - b.height) / 2);
-            ctx.drawImage(b, curOffset, y);
-            curOffset += b.width + gap;
+            const y = Math.round((totH - item.h) / 2);
+            ctx.drawImage(b, 0, 0, b.width, b.height, curOffset, y, item.w, item.h);
+            curOffset += item.w + gap;
           }
         });
 
-        if (liveDims) liveDims.textContent = `${totW} × ${totH} px · ${files.length} images combined`;
-        if (liveHint) liveHint.textContent = `Direction: ${dir} · Gap: ${gap}px · Background: ${bg}`;
+        if (liveDims) liveDims.textContent = `${totW} × ${totH} px · ${files.length} images (${match ? (dir === 'vertical' ? 'Uniform Width' : 'Uniform Height') : 'Original Sizes'})`;
+        if (liveHint) liveHint.textContent = `Direction: ${dir} · ${match ? 'Images scaled to match width' : 'Original dimensions'} · Gap: ${gap}px`;
       } else if (tool === 'photo-for-forms') {
         const bmp = await getBitmap(files[0]);
         if (ticket !== previewTicket) return;
@@ -900,11 +902,12 @@ if (root) {
         const dir = $('#direction')?.value || 'vertical';
         const gap = Number($('#gap')?.value || 0);
         const bg = $('#bg-color')?.value || 'transparent';
+        const match = $('#match-size') ? $('#match-size').value !== 'original' : true;
         const type = $('#format')?.value || 'image/png';
         const qVal = Number(quality?.value || 90) / 100;
 
         const sizes = bitmaps.map(b => ({ w: b.width, h: b.height }));
-        const [totW, totH] = combineDimensions(sizes, dir, gap);
+        const [totW, totH, items] = combineDimensions(sizes, dir, gap, match);
 
         if (totW * totH > 40000000 || totW > 16000 || totH > 16000) {
           bitmaps.forEach(b => b.close());
@@ -922,15 +925,16 @@ if (root) {
         }
 
         let curOffset = 0;
-        bitmaps.forEach(b => {
+        bitmaps.forEach((b, idx) => {
+          const item = items[idx];
           if (dir === 'vertical') {
-            const x = Math.round((totW - b.width) / 2);
-            ctx.drawImage(b, x, curOffset);
-            curOffset += b.height + gap;
+            const x = Math.round((totW - item.w) / 2);
+            ctx.drawImage(b, 0, 0, b.width, b.height, x, curOffset, item.w, item.h);
+            curOffset += item.h + gap;
           } else {
-            const y = Math.round((totH - b.height) / 2);
-            ctx.drawImage(b, curOffset, y);
-            curOffset += b.width + gap;
+            const y = Math.round((totH - item.h) / 2);
+            ctx.drawImage(b, 0, 0, b.width, b.height, curOffset, y, item.w, item.h);
+            curOffset += item.w + gap;
           }
           b.close();
         });

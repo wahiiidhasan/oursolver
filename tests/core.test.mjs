@@ -18,10 +18,23 @@ test('fit preserves ratio, exact mode allows stretch',()=>{
   assert.throws(()=>fitSize(0,3,4,5));
 });
 
-test('combineDimensions calculates vertical and horizontal bounding boxes with gaps',()=>{
+test('combineDimensions calculates vertical and horizontal bounding boxes with proportional matching or original sizes',()=>{
   const sizes=[{w:800,h:600},{w:1200,h:400},{w:1000,h:500}];
-  assert.deepEqual(combineDimensions(sizes,'vertical',10),[1200,600+400+500+20]);
-  assert.deepEqual(combineDimensions(sizes,'horizontal',15),[800+1200+1000+30,600]);
+  const [totW,totH,items]=combineDimensions(sizes,'vertical',10,true);
+  assert.equal(totW,1200);
+  assert.equal(totH,1920);
+  assert.deepEqual(items,[{w:1200,h:900},{w:1200,h:400},{w:1200,h:600}]);
+
+  const [origW,origH,origItems]=combineDimensions(sizes,'vertical',10,false);
+  assert.equal(origW,1200);
+  assert.equal(origH,600+400+500+20);
+  assert.deepEqual(origItems,sizes);
+
+  const [hW,hH,hItems]=combineDimensions(sizes,'horizontal',15,true);
+  assert.equal(hH,600);
+  assert.equal(hItems[0].h,600);
+  assert.equal(hItems[0].w,800);
+
   assert.throws(()=>combineDimensions([]));
   assert.throws(()=>combineDimensions([{w:0,h:100}]));
 });

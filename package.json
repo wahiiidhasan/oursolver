@@ -1,0 +1,22 @@
+{
+  "name": "oursolver",
+  "version": "1.0.0",
+  "description": "OurSolver local image and PDF tools",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "pdf-lib": "1.17.1"
+  },
+  "private": true
+}

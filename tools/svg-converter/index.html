@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SVG to PNG/JPG/WebP Online — Free &amp; Private | OurSolver</title><meta name="description" content="Convert SVG vector files to crisp PNG, JPG, or WebP images. Set custom width and height or choose presets for favicons, 500×500 or 1000×1000 logos, and app icons."><meta name="robots" content="index,follow"><link rel="canonical" href="https://oursolver.com/tools/svg-converter/"><meta name="theme-color" content="#183d35"><meta property="og:type" content="website"><meta property="og:title" content="SVG to PNG/JPG/WebP Online — Free &amp; Private | OurSolver"><meta property="og:description" content="Convert SVG vector files to crisp PNG, JPG, or WebP images. Set custom width and height or choose presets for favicons, 500×500 or 1000×1000 logos, and app icons."><meta property="og:url" content="https://oursolver.com/tools/svg-converter/"><meta property="og:image" content="https://oursolver.com/assets/social.jpg"><meta property="og:site_name" content="OurSolver"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../../assets/logo.svg" type="image/svg+xml"><link rel="stylesheet" href="../../assets/style.css?v=06e2ba57"><script type="application/ld+json">[{"@context":"https://schema.org","@type":"Organization","name":"OurSolver","url":"https://oursolver.com","logo":"https://oursolver.com/assets/logo.svg"},{"@context":"https://schema.org","@type":"WebApplication","name":"SVG to PNG/JPG/WebP","description":"Convert SVG vector files to crisp PNG, JPG, or WebP images. Set custom width and height or choose presets for favicons, 500×500 or 1000×1000 logos, and app icons.","url":"https://oursolver.com/tools/svg-converter/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any modern browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://oursolver.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://oursolver.com/tools/"},{"@type":"ListItem","position":3,"name":"SVG to PNG/JPG/WebP","item":"https://oursolver.com/tools/svg-converter/"}]}]</script><script type="module" src="../../assets/app.js?v=25dc8d9e"></script></head><body><a class="skip" href="#main">Skip to content</a><header><div class="wrap nav"><a class="brand" href="../../" aria-label="OurSolver home"><img src="../../assets/logo.svg" width="36" height="36" alt="">OurSolver<span style="color:var(--orange)">.</span></a><nav class="nav-links" aria-label="Main navigation"><a class="nav-cta" href="../../tools/">All tools <span>↗</span></a><a href="../../blog/">Guides</a><a class="about-link" href="../../about/">About</a><span class="pill">Free. Simple. On your device.</span></nav></div></header><main id="main">
+<div class="wrap">
+  <div class="breadcrumb"><a href="../../">Home</a> / <a href="../../tools/">Tools</a> / SVG to PNG/JPG/WebP</div>
+  <div class="page-intro">
+    <span class="eyebrow">Image TOOL · FREE TO USE</span>
+    <h1>SVG to PNG/JPG/WebP</h1>
+    <p class="lead">Convert SVG vector files to crisp PNG, JPG, or WebP images. Set custom width and height or choose presets for favicons, 500×500 or 1000×1000 logos, and app icons.</p>
+  </div>
+  <div class="tool-layout">
+    <form class="workbench" data-tool="svg-converter">
+      <noscript><p class="notice">Enable JavaScript to process files. No files are uploaded.</p></noscript>
+      <div class="drop" id="drop">
+        <span class="icon" style="margin:auto" aria-hidden="true">◈</span>
+        <strong>Drop your SVG files here</strong>
+        <p class="micro">or choose from your device (or paste with Ctrl+V)</p>
+        <label class="button file-button">Choose SVG files
+          <input id="files" aria-label="Choose SVG files" type="file" accept=".svg,image/svg+xml" multiple>
+        </label>
+        <p class="micro">SVG vector files · Up to 30 MB per file · Up to 30 files</p>
+      </div>
+      <ul class="file-list" id="file-list" aria-label="Selected files"></ul>
+      
+      <div class="live-preview-stage" id="live-stage" hidden>
+        <div class="live-stage-header">
+          <div class="live-badge"><span class="live-dot"></span> Interactive Live Preview</div>
+          <span class="live-dims" id="live-dims">—</span>
+        </div>
+        <div class="live-canvas-wrap" id="live-canvas-wrap">
+          <canvas id="live-canvas"></canvas>
+        </div>
+        <div class="live-hint" id="live-hint">Live preview updates instantly as you adjust settings</div>
+      </div>
+      <div class="fields">
+      <div class="field wide">
+        <div class="field-header"><span>Quick Size Presets</span></div>
+        <div class="btn-group" id="svg-quick-presets">
+          <button type="button" data-preset="favicon-32">Favicon 32×32</button>
+          <button type="button" data-preset="favicon-64">Icon 64×64</button>
+          <button type="button" data-preset="logo-500" class="active">Logo 500×500</button>
+          <button type="button" data-preset="logo-1000">HD Logo 1000×1000</button>
+          <button type="button" data-preset="logo-2000">Print 2000×2000</button>
+          <button type="button" data-preset="original">Original 1×</button>
+          <button type="button" data-preset="scale-2x">Retina 2×</button>
+        </div>
+      </div>
+      <label class="field wide">Standard Conversion Preset<select id="svg-preset">
+        <optgroup label="Logo &amp; Brand Presets">
+          <option value="logo-500" selected>Standard Logo (500 × 500 px)</option>
+          <option value="logo-1000">HD Logo / Brand Asset (1000 × 1000 px)</option>
+          <option value="logo-2000">Print / 4K Logo (2000 × 2000 px)</option>
+        </optgroup>
+        <optgroup label="Favicon &amp; App Icon Presets">
+          <option value="favicon-16">Favicon Mini (16 × 16 px)</option>
+          <option value="favicon-32">Favicon Standard (32 × 32 px)</option>
+          <option value="favicon-48">Favicon Desktop (48 × 48 px)</option>
+          <option value="favicon-64">Favicon HD / Site Icon (64 × 64 px)</option>
+          <option value="apple-180">Apple Touch Icon (180 × 180 px)</option>
+          <option value="pwa-192">Web App / Android Icon (192 × 192 px)</option>
+          <option value="pwa-512">App Store / PWA Splash Icon (512 × 512 px)</option>
+        </optgroup>
+        <optgroup label="Native SVG Scale &amp; Custom">
+          <option value="original">Original SVG Dimensions (1× Native)</option>
+          <option value="scale-2x">Retina 2× SVG Scale</option>
+          <option value="scale-4x">Ultra HD 4× SVG Scale</option>
+          <option value="custom">Custom Width &amp; Height</option>
+        </optgroup>
+        <optgroup label="Social &amp; Banner Presets">
+          <option value="og-1200x630">Social Share / Open Graph (1200 × 630 px)</option>
+          <option value="hd-1920x1080">Full HD Widescreen (1920 × 1080 px)</option>
+        </optgroup>
+      </select></label>
+      <div class="field-row">
+        <label class="field">Width (px)<input id="svg-w" type="number" min="1" max="12000" value="500" required></label>
+        <label class="field">Height (px)<input id="svg-h" type="number" min="1" max="12000" value="500" required></label>
+      </div>
+      <div class="field-row">
+        <label class="field">Scaling &amp; Proportions<select id="svg-fit">
+          <option value="contain-canvas" selected>Fit &amp; center on exact W × H canvas</option>
+          <option value="fit-bounds">Fit proportionally (trim canvas to SVG ratio)</option>
+          <option value="stretch">Stretch to fill exact W × H</option>
+        </select></label>
+        <label class="field">Background Fill<select id="svg-bg">
+          <option value="transparent" selected>Transparent (PNG / WebP)</option>
+          <option value="#ffffff">Clean White (#FFFFFF)</option>
+          <option value="#000000">Solid Black (#000000)</option>
+          <option value="#f5f7f1">Soft Cream (#F5F7F1)</option>
+          <option value="#183d35">Deep Forest (#183D35)</option>
+        </select></label>
+      </div>
+      <label class="field wide"><div class="field-header"><span>Inner Padding</span><span id="pad-value" class="field-val">0%</span></div><input id="pad" type="range" min="0" max="25" step="5" value="0"><span class="micro">Adds clean margin around your vector icon or logo inside the canvas.</span></label>
+      <label class="field wide"><div class="field-header"><span>Quality</span><span id="quality-value" class="field-val">92%</span></div><input id="quality" type="range" min="5" max="100" value="92"><span class="micro">For JPG and WebP outputs. PNG is always lossless.</span></label>
+      <label class="field wide">Output format<select id="format"><option value="image/jpeg">JPG (white background)</option><option value="image/png" selected>PNG (supports transparency)</option><option value="image/webp">WebP (supports transparency)</option></select></label>
+    </div>
+      <div class="actions">
+        <button class="button" id="run" type="submit" disabled>Create image ↗</button>
+        <button class="button secondary" id="clear" type="button">Clear files</button>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Choose a file to get started.</p>
+      <div id="results"></div>
+    </form>
+    <aside class="aside">
+      <h2>Three simple steps</h2>
+      <ol><li>Select up to 30 SVG files from your device or paste SVG files/code with Ctrl+V.</li><li>Choose a preset (Favicon, 500×500 Logo, 1000×1000 HD Logo, App Icon, or 2×/4× scale) or enter custom width and height.</li><li>Pick PNG, WebP, or JPG, check the live preview, and download your crisp rasterized images.</li></ol>
+      <div class="note"><strong>Stays on your device</strong><br>File processing happens in this browser. No account or upload required.</div>
+      <p class="micro">30 files maximum for multi-file tools, 100 MB combined. Image limit: 40 megapixels. PDF output: 2,000 pages.</p>
+    </aside>
+  </div>
+  <section class="prose">
+    <h2>Good to know</h2>
+    <p>Because SVG is a resolution-independent vector format, OurSolver scales the vector paths directly to your target width and height before rasterizing—giving you razor-sharp edges at any size from a 16×16 favicon to a 4,000×4,000 print logo.</p>
+    <p>Keep your original files. Check the downloaded result before submitting or sharing it. Modern desktop browsers work best for larger documents.</p>
+    <details>
+      <summary>Does OurSolver store my files?</summary>
+      <p>No. Files are held in browser memory during processing. Clear the files or close the page when you finish. Downloaded files remain on your device.</p>
+    </details>
+    <details>
+      <summary>Why did processing fail?</summary>
+      <p>A file may be damaged, encrypted, unsupported or too large for your device's available memory. Try a smaller file and an updated browser. <a href="../../help/">Read troubleshooting tips.</a></p>
+    </details>
+    <h2>Related guides</h2>
+    <ul></ul>
+  </section>
+</div>
+</main><footer class="site-footer"><div class="wrap"><div class="footer-top"><div><a class="brand" href="../../"><img src="../../assets/logo.svg" alt="" width="36" height="36">OurSolver.</a><p class="micro">Small file problems. Thoughtfully solved.</p><a class="footer-email" href="mailto:support@oursolver.com">support@oursolver.com <span aria-hidden="true">↗</span></a></div><nav class="footer-links" aria-label="Footer"><a href="../../tools/">Tools</a><a href="../../blog/">Guides</a><a href="../../about/">About</a><a href="../../privacy/">Privacy</a><a href="../../terms/">Terms</a><a href="../../help/">Help</a></nav></div><p class="footer-note">© 2026 OurSolver · Your files are processed in your browser. No file uploads, accounts or subscriptions.</p></div><a class="footer-wordmark" href="../../" aria-label="OurSolver home"><svg viewBox="0 0 1000 200" role="presentation" aria-hidden="true" focusable="false"><text x="500" y="164" text-anchor="middle" textLength="980" lengthAdjust="spacingAndGlyphs">oursolver</text></svg></a></footer></body></html>
